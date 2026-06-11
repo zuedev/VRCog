@@ -39,6 +39,7 @@ public class FileStatTree : EditorWindow
         scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
         foreach (var info in assetList)
         {
+            if (info.asset == null) continue;
             EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
             EditorGUILayout.ObjectField(info.asset, info.asset.GetType(), false);
             GUILayout.Label(FormatSize(info.size), GUILayout.Width(80));
