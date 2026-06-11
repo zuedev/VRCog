@@ -51,7 +51,7 @@ namespace Zue.VRCog.Editor
                 GUILayout.Label($"Found {results.Count} objects:", EditorStyles.helpBox);
                 if (GUILayout.Button("Select All", GUILayout.Width(80)))
                 {
-                    Selection.objects = results.Select(r => (Object)r.gameObject).ToArray();
+                    Selection.objects = results.Select(r => (UnityEngine.Object)r.gameObject).ToArray();
                 }
                 EditorGUILayout.EndHorizontal();
 
