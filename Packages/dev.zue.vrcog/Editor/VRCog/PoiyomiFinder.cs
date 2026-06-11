@@ -4,13 +4,23 @@
 
 using UnityEngine;
 using UnityEditor;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public class PoiyomiFinder : EditorWindow
 {
     private GameObject targetObject;
-    private List<GameObject> results = new List<GameObject>();
+    private string shaderFilter = "poiyomi";
+    private List<MatchInfo> results = new List<MatchInfo>();
     private Vector2 scrollPos;
+
+    struct MatchInfo
+    {
+        public GameObject gameObject;
+        public string matchedMaterial;
+        public string matchedShader;
+    }
 
     [MenuItem("Tools/VRCog/Poiyomi Finder")]
     public static void ShowWindow()
@@ -20,11 +30,12 @@ public class PoiyomiFinder : EditorWindow
 
     private void OnGUI()
     {
-        GUILayout.Label("Search Hierarchy for Poiyomi Shaders", EditorStyles.boldLabel);
-        
-        targetObject = (GameObject)EditorGUILayout.ObjectField("Target Root", targetObject, typeof(GameObject), true);
+        GUILayout.Label("Search Hierarchy for Shaders", EditorStyles.boldLabel);
 
-        if (GUILayout.Button("Find Poiyomi Materials"))
+        targetObject = (GameObject)EditorGUILayout.ObjectField("Target Root", targetObject, typeof(GameObject), true);
+        shaderFilter = EditorGUILayout.TextField("Shader Filter", shaderFilter);
+
+        if (GUILayout.Button("Find Materials"))
         {
             FindMaterials();
         }
@@ -33,20 +44,31 @@ public class PoiyomiFinder : EditorWindow
 
         if (results.Count > 0)
         {
+            EditorGUILayout.BeginHorizontal();
             GUILayout.Label($"Found {results.Count} objects:", EditorStyles.helpBox);
-            scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
-            
-            foreach (GameObject obj in results)
+            if (GUILayout.Button("Select All", GUILayout.Width(80)))
             {
+                Selection.objects = results.Select(r => (Object)r.gameObject).ToArray();
+            }
+            EditorGUILayout.EndHorizontal();
+
+            scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
+
+            foreach (MatchInfo info in results)
+            {
+                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.ObjectField(obj, typeof(GameObject), true);
+                EditorGUILayout.ObjectField(info.gameObject, typeof(GameObject), true);
                 if (GUILayout.Button("Select", GUILayout.Width(60)))
                 {
-                    Selection.activeGameObject = obj;
+                    Selection.activeGameObject = info.gameObject;
+                    EditorGUIUtility.PingObject(info.gameObject);
                 }
                 EditorGUILayout.EndHorizontal();
+                EditorGUILayout.LabelField($"mat: {info.matchedMaterial}  ·  shader: {info.matchedShader}", EditorStyles.miniLabel);
+                EditorGUILayout.EndVertical();
             }
-            
+
             EditorGUILayout.EndScrollView();
         }
     }
@@ -56,7 +78,7 @@ public class PoiyomiFinder : EditorWindow
         results.Clear();
         if (targetObject == null) return;
 
-        // Get all renderers in children
+        HashSet<GameObject> seen = new HashSet<GameObject>();
         Renderer[] renderers = targetObject.GetComponentsInChildren<Renderer>(true);
 
         foreach (Renderer ren in renderers)
@@ -65,14 +87,18 @@ public class PoiyomiFinder : EditorWindow
             {
                 if (mat != null && mat.shader != null)
                 {
-                    // Check if the shader name contains "poiyomi" (case-insensitive)
-                    if (mat.shader.name.ToLower().Contains("poiyomi"))
+                    if (mat.shader.name.IndexOf(shaderFilter, StringComparison.OrdinalIgnoreCase) >= 0)
                     {
-                        if (!results.Contains(ren.gameObject))
+                        if (seen.Add(ren.gameObject))
                         {
-                            results.Add(ren.gameObject);
+                            results.Add(new MatchInfo
+                            {
+                                gameObject = ren.gameObject,
+                                matchedMaterial = mat.name,
+                                matchedShader = mat.shader.name
+                            });
                         }
-                        break; // Move to next renderer once found
+                        break;
                     }
                 }
             }
