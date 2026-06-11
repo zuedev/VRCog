@@ -8,6 +8,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+namespace Zue.VRCog.Editor
+{
+
 public class PoiyomiFinder : EditorWindow
 {
     private GameObject targetObject;
@@ -105,3 +108,5 @@ public class PoiyomiFinder : EditorWindow
         }
     }
 }
+
+} // namespace Zue.VRCog.Editor

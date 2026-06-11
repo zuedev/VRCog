@@ -8,6 +8,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+namespace Zue.VRCog.Editor
+{
+
 public class FileStatTree : EditorWindow
 {
     private GameObject targetObject;
@@ -168,3 +171,5 @@ public class FileStatTree : EditorWindow
         return (bytes / 1024f).ToString("F2") + " KB";
     }
 }
+
+} // namespace Zue.VRCog.Editor
