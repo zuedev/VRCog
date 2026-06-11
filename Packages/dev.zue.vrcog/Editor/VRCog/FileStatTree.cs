@@ -36,6 +36,15 @@ public class FileStatTree : EditorWindow
 
         EditorGUILayout.Space();
 
+        if (assetList.Count > 0)
+        {
+            EditorGUILayout.HelpBox(
+                "Sizes shown are on-disk file sizes and do not reflect runtime memory usage. " +
+                "A compressed texture may be small on disk but large in VRAM once decompressed, and vice versa. " +
+                "For accurate runtime figures, use the Memory Profiler package.",
+                MessageType.Info);
+        }
+
         scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
         foreach (var info in assetList)
         {
