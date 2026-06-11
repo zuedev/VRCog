@@ -16,9 +16,9 @@ public class FileStatTree : EditorWindow
 
     struct AssetSizeInfo
     {
-        public Object asset;
+        public List<Object> assets;
         public long size;
-        public string type;
+        public string path;
     }
 
     [MenuItem("Tools/VRCog/File Stat Tree")]
@@ -39,11 +39,33 @@ public class FileStatTree : EditorWindow
         scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
         foreach (var info in assetList)
         {
-            if (info.asset == null) continue;
-            EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
-            EditorGUILayout.ObjectField(info.asset, info.asset.GetType(), false);
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+            EditorGUILayout.BeginHorizontal();
+            if (info.assets.Count == 1)
+            {
+                Object a = info.assets[0];
+                if (a != null)
+                    EditorGUILayout.ObjectField(a, a.GetType(), false);
+                else
+                    EditorGUILayout.LabelField(Path.GetFileName(info.path));
+            }
+            else
+            {
+                EditorGUILayout.LabelField($"{Path.GetFileName(info.path)}  ({info.assets.Count} assets)");
+            }
             GUILayout.Label(FormatSize(info.size), GUILayout.Width(80));
             EditorGUILayout.EndHorizontal();
+            if (info.assets.Count > 1)
+            {
+                EditorGUI.indentLevel++;
+                foreach (Object a in info.assets)
+                {
+                    if (a == null) continue;
+                    EditorGUILayout.ObjectField(a, a.GetType(), false);
+                }
+                EditorGUI.indentLevel--;
+            }
+            EditorGUILayout.EndVertical();
         }
         EditorGUILayout.EndScrollView();
     }
@@ -99,17 +121,25 @@ public class FileStatTree : EditorWindow
             }
         }
 
+        // Group assets by source file so each file's size is counted only once
+        var byPath = new Dictionary<string, List<Object>>();
         foreach (var asset in foundAssets)
         {
             string path = AssetDatabase.GetAssetPath(asset);
-            if (!string.IsNullOrEmpty(path))
+            if (string.IsNullOrEmpty(path)) continue;
+            if (!byPath.TryGetValue(path, out List<Object> list))
             {
-                FileInfo fi = new FileInfo(path);
-                if (fi.Exists)
-                {
-                    assetList.Add(new AssetSizeInfo { asset = asset, size = fi.Length, type = asset.GetType().Name });
-                }
+                list = new List<Object>();
+                byPath[path] = list;
             }
+            list.Add(asset);
+        }
+
+        foreach (var kvp in byPath)
+        {
+            FileInfo fi = new FileInfo(kvp.Key);
+            if (fi.Exists)
+                assetList.Add(new AssetSizeInfo { assets = kvp.Value, size = fi.Length, path = kvp.Key });
         }
 
         // Sort by size descending
