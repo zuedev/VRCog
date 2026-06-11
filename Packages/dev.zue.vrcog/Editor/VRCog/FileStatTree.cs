@@ -11,9 +11,10 @@ using System.Linq;
 public class FileStatTree : EditorWindow
 {
     private GameObject targetObject;
-    private List<AssetSizeInfo> assetList = new List<AssetSizeInfo>();
+    [SerializeField] private List<AssetSizeInfo> assetList = new List<AssetSizeInfo>();
     private Vector2 scrollPos;
 
+    [System.Serializable]
     struct AssetSizeInfo
     {
         public List<Object> assets;
@@ -54,7 +55,10 @@ public class FileStatTree : EditorWindow
             {
                 Object a = info.assets[0];
                 if (a != null)
+                {
                     EditorGUILayout.ObjectField(a, a.GetType(), false);
+                    GUILayout.Label(a.GetType().Name, GUILayout.Width(90));
+                }
                 else
                     EditorGUILayout.LabelField(Path.GetFileName(info.path));
             }
@@ -70,7 +74,10 @@ public class FileStatTree : EditorWindow
                 foreach (Object a in info.assets)
                 {
                     if (a == null) continue;
+                    EditorGUILayout.BeginHorizontal();
                     EditorGUILayout.ObjectField(a, a.GetType(), false);
+                    GUILayout.Label(a.GetType().Name, GUILayout.Width(90));
+                    EditorGUILayout.EndHorizontal();
                 }
                 EditorGUI.indentLevel--;
             }
