@@ -78,8 +78,24 @@ public class FileStatTree : EditorWindow
             }
             
             // Track Mesh
-            MeshFilter mf = ren.GetComponent<MeshFilter>();
-            if (mf != null && mf.sharedMesh != null) foundAssets.Add(mf.sharedMesh);
+            switch (ren)
+            {
+                case SkinnedMeshRenderer smr:
+                    if (smr.sharedMesh != null) foundAssets.Add(smr.sharedMesh);
+                    break;
+                case ParticleSystemRenderer psr when psr.renderMode == ParticleSystemRenderMode.Mesh:
+                    Mesh[] particleMeshes = new Mesh[psr.meshCount];
+                    psr.GetMeshes(particleMeshes);
+                    foreach (Mesh m in particleMeshes)
+                    {
+                        if (m != null) foundAssets.Add(m);
+                    }
+                    break;
+                default:
+                    MeshFilter mf = ren.GetComponent<MeshFilter>();
+                    if (mf != null && mf.sharedMesh != null) foundAssets.Add(mf.sharedMesh);
+                    break;
+            }
         }
 
         foreach (var asset in foundAssets)
