@@ -11,102 +11,102 @@ using System.Linq;
 namespace Zue.VRCog.Editor
 {
 
-public class PoiyomiFinder : EditorWindow
-{
-    private GameObject targetObject;
-    private string shaderFilter = "poiyomi";
-    private List<MatchInfo> results = new List<MatchInfo>();
-    private Vector2 scrollPos;
-
-    struct MatchInfo
+    public class PoiyomiFinder : EditorWindow
     {
-        public GameObject gameObject;
-        public string matchedMaterial;
-        public string matchedShader;
-    }
+        private GameObject targetObject;
+        private string shaderFilter = "poiyomi";
+        private List<MatchInfo> results = new List<MatchInfo>();
+        private Vector2 scrollPos;
 
-    [MenuItem("Tools/VRCog/Poiyomi Finder")]
-    public static void ShowWindow()
-    {
-        GetWindow<PoiyomiFinder>("Poiyomi Finder");
-    }
-
-    private void OnGUI()
-    {
-        GUILayout.Label("Search Hierarchy for Shaders", EditorStyles.boldLabel);
-
-        targetObject = (GameObject)EditorGUILayout.ObjectField("Target Root", targetObject, typeof(GameObject), true);
-        shaderFilter = EditorGUILayout.TextField("Shader Filter", shaderFilter);
-
-        if (GUILayout.Button("Find Materials"))
+        struct MatchInfo
         {
-            FindMaterials();
+            public GameObject gameObject;
+            public string matchedMaterial;
+            public string matchedShader;
         }
 
-        EditorGUILayout.Space();
-
-        if (results.Count > 0)
+        [MenuItem("Tools/VRCog/Poiyomi Finder")]
+        public static void ShowWindow()
         {
-            EditorGUILayout.BeginHorizontal();
-            GUILayout.Label($"Found {results.Count} objects:", EditorStyles.helpBox);
-            if (GUILayout.Button("Select All", GUILayout.Width(80)))
+            GetWindow<PoiyomiFinder>("Poiyomi Finder");
+        }
+
+        private void OnGUI()
+        {
+            GUILayout.Label("Search Hierarchy for Shaders", EditorStyles.boldLabel);
+
+            targetObject = (GameObject)EditorGUILayout.ObjectField("Target Root", targetObject, typeof(GameObject), true);
+            shaderFilter = EditorGUILayout.TextField("Shader Filter", shaderFilter);
+
+            if (GUILayout.Button("Find Materials"))
             {
-                Selection.objects = results.Select(r => (Object)r.gameObject).ToArray();
+                FindMaterials();
             }
-            EditorGUILayout.EndHorizontal();
 
-            scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
+            EditorGUILayout.Space();
 
-            foreach (MatchInfo info in results)
+            if (results.Count > 0)
             {
-                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.ObjectField(info.gameObject, typeof(GameObject), true);
-                if (GUILayout.Button("Select", GUILayout.Width(60)))
+                GUILayout.Label($"Found {results.Count} objects:", EditorStyles.helpBox);
+                if (GUILayout.Button("Select All", GUILayout.Width(80)))
                 {
-                    Selection.activeGameObject = info.gameObject;
-                    EditorGUIUtility.PingObject(info.gameObject);
+                    Selection.objects = results.Select(r => (Object)r.gameObject).ToArray();
                 }
                 EditorGUILayout.EndHorizontal();
-                EditorGUILayout.LabelField($"mat: {info.matchedMaterial}  ·  shader: {info.matchedShader}", EditorStyles.miniLabel);
-                EditorGUILayout.EndVertical();
-            }
 
-            EditorGUILayout.EndScrollView();
-        }
-    }
+                scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
 
-    private void FindMaterials()
-    {
-        results.Clear();
-        if (targetObject == null) return;
-
-        HashSet<GameObject> seen = new HashSet<GameObject>();
-        Renderer[] renderers = targetObject.GetComponentsInChildren<Renderer>(true);
-
-        foreach (Renderer ren in renderers)
-        {
-            foreach (Material mat in ren.sharedMaterials)
-            {
-                if (mat != null && mat.shader != null)
+                foreach (MatchInfo info in results)
                 {
-                    if (mat.shader.name.IndexOf(shaderFilter, StringComparison.OrdinalIgnoreCase) >= 0)
+                    EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.ObjectField(info.gameObject, typeof(GameObject), true);
+                    if (GUILayout.Button("Select", GUILayout.Width(60)))
                     {
-                        if (seen.Add(ren.gameObject))
+                        Selection.activeGameObject = info.gameObject;
+                        EditorGUIUtility.PingObject(info.gameObject);
+                    }
+                    EditorGUILayout.EndHorizontal();
+                    EditorGUILayout.LabelField($"mat: {info.matchedMaterial}  ·  shader: {info.matchedShader}", EditorStyles.miniLabel);
+                    EditorGUILayout.EndVertical();
+                }
+
+                EditorGUILayout.EndScrollView();
+            }
+        }
+
+        private void FindMaterials()
+        {
+            results.Clear();
+            if (targetObject == null) return;
+
+            HashSet<GameObject> seen = new HashSet<GameObject>();
+            Renderer[] renderers = targetObject.GetComponentsInChildren<Renderer>(true);
+
+            foreach (Renderer ren in renderers)
+            {
+                foreach (Material mat in ren.sharedMaterials)
+                {
+                    if (mat != null && mat.shader != null)
+                    {
+                        if (mat.shader.name.IndexOf(shaderFilter, StringComparison.OrdinalIgnoreCase) >= 0)
                         {
-                            results.Add(new MatchInfo
+                            if (seen.Add(ren.gameObject))
                             {
-                                gameObject = ren.gameObject,
-                                matchedMaterial = mat.name,
-                                matchedShader = mat.shader.name
-                            });
+                                results.Add(new MatchInfo
+                                {
+                                    gameObject = ren.gameObject,
+                                    matchedMaterial = mat.name,
+                                    matchedShader = mat.shader.name
+                                });
+                            }
+                            break;
                         }
-                        break;
                     }
                 }
             }
         }
     }
-}
 
 } // namespace Zue.VRCog.Editor
