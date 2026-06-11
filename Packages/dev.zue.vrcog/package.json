@@ -1,0 +1,13 @@
+{
+  "name": "dev.zue.vrcog",
+  "displayName": "VRCog",
+  "version": "0.0.1",
+  "unity": "2022.3",
+  "description": "Unity editor utilities for VRChat creators. The missing gear in your workflow.",
+  "vrchatVersion": "2022.1.1",
+  "author": {
+    "name": "Alex Pooley (@zuedev)",
+    "email": "zuedev@gmail.com",
+    "url": "https://zue.dev"
+  }
+}
