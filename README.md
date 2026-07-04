@@ -6,14 +6,9 @@ VRCog is a collection of Unity editor utilities built for VRChat creators. Wheth
 
 ## Installation
 
-VRCog is distributed as a [VPM](https://vcc.docs.vrchat.com/) package. You need the [VRChat Creator Companion](https://vrchat.com/home/download) to install it.
+**[VRCog doesn't use VPM](documentation/why-not-vpm.md).**
 
-1. Click **Add to VCC** at [zuedev.github.io/VRCog](https://zuedev.github.io/VRCog), or manually add the listing URL in VCC under **Settings → Packages → Add Repository**:
-   ```
-   https://zuedev.github.io/VRCog
-   ```
-2. Open your project in VCC and enable **VRCog** from the package list.
-3. Unity 2022.3 or later is required.
+Instead, download the latest release from the [Releases](https://github.com/zuedev/VRCog/releases) page and import the `.unitypackage` into your project. The tools will appear in the `Tools → VRCog` menu.
 
 ## Tools
 
@@ -29,8 +24,6 @@ Audits all assets referenced by a selected hierarchy root and sorts them by on-d
 - Results persist across domain reloads and play mode
 
 > **Note:** Sizes reflect on-disk file size, not runtime memory (VRAM). For accurate memory figures, use Unity's [Memory Profiler](https://docs.unity3d.com/Packages/com.unity.memoryprofiler@latest) package.
-
----
 
 ### Poiyomi Finder
 
