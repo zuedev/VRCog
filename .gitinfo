@@ -1,6 +1,6 @@
 {
   "$schema": "https://git.zue.dev/gitinfo/plain/gitinfo.schema.json",
-  "root": "https://git.zue.dev/VRCog",
+  "root": "https://github.com/zuedev/VRCog",
   "description": "Unity editor utilities for VRChat creators. The missing gear in your workflow.",
   "maintainers": [
     [
@@ -8,8 +8,5 @@
       "zuedev@gmail.com"
     ]
   ],
-  "license": "Unlicense",
-  "mirrors": [
-    "https://github.com/zuedev/VRCog"
-  ]
+  "license": "Unlicense"
 }
