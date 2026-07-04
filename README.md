@@ -8,7 +8,7 @@ VRCog is a collection of Unity editor utilities built for VRChat creators. Wheth
 
 **[VRCog doesn't use VPM](documentation/why-not-vpm.md).**
 
-Instead, download the latest release from the [Releases](https://github.com/zuedev/VRCog/releases) page and import the `.unitypackage` into your project. The tools will appear in the `Tools → VRCog` menu.
+Instead, download the latest release from the [Releases](https://github.com/zuedev/VRCog/releases) page and unzip it into your Unity project's `Assets` folder. The editor scripts will automatically compile and the tools will be available in the `Tools → VRCog` menu.
 
 ## Tools
 
