@@ -10,6 +10,8 @@ VRCog is a collection of Unity editor utilities built for VRChat creators. Wheth
 
 Instead, download the latest release from the [Releases](https://github.com/zuedev/VRCog/releases) page and unzip it into your Unity project's `Assets` folder. The editor scripts will automatically compile and the tools will be available in the `Tools → VRCog` menu.
 
+To update, simply delete the old `VRCog` folder and replace it with the new one. No need to restart Unity as the editor scripts will recompile automatically.
+
 ## Tools
 
 ### File Stat Tree
